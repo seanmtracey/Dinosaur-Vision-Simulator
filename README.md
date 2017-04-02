@@ -29,6 +29,8 @@ Frame 1 is the current frame of the video, and frame 2 is the previous frame. Bo
 
 2. The old getUserMedia interface is used. I like it better, but I'll upgrade the new promise-based interface when I get a chance.
 
+3. Stereoscopic vision is not supported. Though a left-eye/right-eye view is displayed, the source is from the same camera, so no illusion of depth is created. The image when viewed appears flat, but depth can be inferred from the edges of things in your FoV.
+
 ## Here's a picture of me hunting my (very still) prey
 
 ![dino-vision-demo-stage jpg-large](https://cloud.githubusercontent.com/assets/913687/24591365/810a2764-17f7-11e7-8745-be48310419f8.jpg)
