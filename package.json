@@ -1,0 +1,12 @@
+{
+  "name": "dinosaur-vision",
+  "version": "1.0.0",
+  "description": "Dinosaur. Vision. Simulator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "python -m SimpleHTTPServer 8090"
+  },
+  "author": "Sean M. Tracey",
+  "license": "ISC"
+}
