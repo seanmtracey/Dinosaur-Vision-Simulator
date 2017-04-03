@@ -14,6 +14,9 @@ var dino_vision = (function(){
 	var ctxDiff = undefined;
 	var ctxClone = undefined;
 
+	var WIDTH = undefined;
+	var HEIGHT = undefined;
+
 	var maxThreshold = 20;
 	var minThreshold = -maxThreshold;
 
@@ -22,11 +25,9 @@ var dino_vision = (function(){
 
 	function calculateDiff(dOne, dTwo){
 
-		// var diffImageData = ctxOne.getImageData(0, 0, canvasDiff.width, canvasDiff.height);
-		var diffImageData = ctxOne.createImageData(canvasDiff.width, canvasDiff.height);
-		var d = diffImageData.data;
+		var diffImageData = ctxOne.createImageData(WIDTH, HEIGHT);
 
-		for(var y = 0; y < d.length; y += 4){
+		for(var y = 0; y < diffImageData.data.length; y += 4){
 			var delta = dOne[y] - dTwo[y];
 
 			if(delta < minThreshold || delta > maxThreshold){
@@ -50,19 +51,9 @@ var dino_vision = (function(){
 
 	function greyScale(imageData){
 
-		var d = imageData.data;
-
-		for(var x = 0; x < d.length; x += 4){
-
-			var grey = d[x] + d[x + 1] + d[x + 2];
-
-			d[x] = grey;
-			d[x + 1] = grey;
-			d[x + 2] = grey;
-
+		for(var x = 0; x < imageData.data.length; x += 4){
+			imageData.data[x] = imageData.data[x + 1] = imageData.data[x + 2] = (imageData.data[x] + imageData.data[x + 1] + imageData.data[x + 2]);
 		}
-
-		imageData.data = d;
 
 		return imageData;
 
@@ -73,72 +64,17 @@ var dino_vision = (function(){
 		ctxTwo.drawImage(canvasOne, 0, 0);
 		ctxOne.drawImage(video, 0, 0);
 
-		var g = greyScale(ctxOne.getImageData(0, 0, canvasOne.width, canvasOne.height));
+		var g = greyScale(ctxOne.getImageData(0, 0, WIDTH, HEIGHT));
 
 		// console.log(g);
 
 		ctxOne.putImageData(g, 0, 0);
 
-		calculateDiff(ctxOne.getImageData(0,0,canvasOne.width, canvasOne.height).data, ctxTwo.getImageData(0,0,canvasOne.width, canvasOne.height).data);
+		calculateDiff(ctxOne.getImageData(0,0,WIDTH, HEIGHT).data, ctxTwo.getImageData(0,0,WIDTH, HEIGHT).data);
 
 		requestAnimationFrame(draw);
 
 	}
-
-	// Old getUserMedia, for posterity's sake...
-
-	/*
-		{
-			"video": {
-				optional: [
-					{minWidth: 320},
-					// {minWidth: 640},
-					// {minWidth: 1024},
-					// {minWidth: 1280},
-					// {minWidth: 1920},
-					// {minWidth: 2560}
-				]
-			},
-			audio: false
-		}, function(stream){
-
-			video.src = window.URL.createObjectURL(stream);
-			video.play();
-
-			setTimeout(function(){
-
-				canvasOne = document.createElement('canvas');
-				canvasTwo = document.createElement('canvas');
-				canvasDiff = document.createElement('canvas');
-				canvasClone = document.createElement('canvas');
-
-				canvasOne.id = 'cone';
-				canvasTwo.id = 'ctwo';
-				canvasDiff.id = 'cdiff';
-				canvasClone.id = 'cclone';
-
-				canvasOne.width = canvasTwo.width = canvasDiff.width = canvasClone.width = video.offsetWidth;
-				canvasOne.height = canvasTwo.height = canvasDiff.height = canvasClone.height = video.offsetHeight;
-
-				ctxOne = canvasOne.getContext('2d');
-				ctxTwo = canvasTwo.getContext('2d');
-				ctxDiff = canvasDiff.getContext('2d');
-				ctxClone = canvasClone.getContext('2d');
-
-				document.body.appendChild(canvasOne);
-				document.body.appendChild(canvasTwo);
-				leftEyeHolder.appendChild(canvasDiff);
-				rightEyeHolder.appendChild(canvasClone);
-
-				draw();
-
-			}, 1000);
-
-
-		}, function(err){
-			console.log('Something went wrong', err);
-		})
-	;*/
 
 	navigator.mediaDevices.enumerateDevices()
 		.then( function(listOfDevices){
@@ -157,8 +93,13 @@ var dino_vision = (function(){
 			if(deviceID !== undefined){
 				constraints.video = { deviceId: { exact: deviceID } };
 			} else {
-				constraints.video ={ facingMode: { exact: "environment" } };
+				constraints.video = { facingMode: { exact: "environment" } };
 			}
+
+			//constraints.video.height = {};
+			
+			// Possibly limit video size for speed.
+			// constraints.video.height.max = 361;
 
 			navigator.mediaDevices.getUserMedia(constraints)
 				.then(function(stream) {
@@ -178,8 +119,8 @@ var dino_vision = (function(){
 						canvasDiff.id = 'cdiff';
 						canvasClone.id = 'cclone';
 
-						canvasOne.width = canvasTwo.width = canvasDiff.width = canvasClone.width = video.offsetWidth;
-						canvasOne.height = canvasTwo.height = canvasDiff.height = canvasClone.height = video.offsetHeight;
+						WIDTH = canvasOne.width = canvasTwo.width = canvasDiff.width = canvasClone.width = video.offsetWidth;
+						HEIGHT = canvasOne.height = canvasTwo.height = canvasDiff.height = canvasClone.height = video.offsetHeight;
 
 						ctxOne = canvasOne.getContext('2d');
 						ctxTwo = canvasTwo.getContext('2d');
@@ -200,7 +141,6 @@ var dino_vision = (function(){
 
 		})
 	;
-
 
 	window.addEventListener('click', function(key){
 
