@@ -36,9 +36,7 @@ var dino_vision = (function(){
 				diffImageData.data[y + 2] = 0;
 				diffImageData.data[y + 3] = 255;
 			} else {
-				diffImageData.data[y] = 0;
-				diffImageData.data[y + 1] = 0;
-				diffImageData.data[y + 2] = 0;
+				diffImageData.data[y] = diffImageData.data[y + 1] = diffImageData.data[y + 2] = 0;
 				diffImageData.data[y + 3] = 255;
 			}
 
@@ -97,15 +95,14 @@ var dino_vision = (function(){
 			}
 
 			//constraints.video.height = {};
+			// constraints.video.height.max = 361;
 			
 			// Possibly limit video size for speed.
-			// constraints.video.height.max = 361;
 
 			navigator.mediaDevices.getUserMedia(constraints)
 				.then(function(stream) {
 
 					video.src = window.URL.createObjectURL(stream);
-					video.play();
 
 					setTimeout(function(){
 
@@ -126,6 +123,8 @@ var dino_vision = (function(){
 						ctxTwo = canvasTwo.getContext('2d');
 						ctxDiff = canvasDiff.getContext('2d');
 						ctxClone = canvasClone.getContext('2d');
+
+						// ctxDiff.globalAlpha = ctxClone.globalAlpha = 0.1
 
 						document.body.appendChild(canvasOne);
 						document.body.appendChild(canvasTwo);
