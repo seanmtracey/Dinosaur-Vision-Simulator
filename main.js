@@ -85,7 +85,9 @@ var dino_vision = (function(){
 
 	}
 
-	navigator.getUserMedia (
+	// Old getUserMedia, for posterity's sake...
+
+	/*
 		{
 			"video": {
 				optional: [
@@ -136,7 +138,69 @@ var dino_vision = (function(){
 		}, function(err){
 			console.log('Something went wrong', err);
 		})
+	;*/
+
+	navigator.mediaDevices.enumerateDevices()
+		.then( function(listOfDevices){
+			
+			var deviceID = undefined;
+
+			listOfDevices.forEach(function(device){
+				if(device.kind === 'videoinput' && (device.label.indexOf('back') > -1 || device.label.indexOf('rear')) ){
+					deviceID = device.deviceId;
+					return
+				}
+			});
+
+			var constraints = { audio: false };
+
+			if(deviceID !== undefined){
+				constraints.video = { deviceId: { exact: deviceID } };
+			} else {
+				constraints.video ={ facingMode: { exact: "environment" } };
+			}
+
+			navigator.mediaDevices.getUserMedia(constraints)
+				.then(function(stream) {
+
+					video.src = window.URL.createObjectURL(stream);
+					video.play();
+
+					setTimeout(function(){
+
+						canvasOne = document.createElement('canvas');
+						canvasTwo = document.createElement('canvas');
+						canvasDiff = document.createElement('canvas');
+						canvasClone = document.createElement('canvas');
+
+						canvasOne.id = 'cone';
+						canvasTwo.id = 'ctwo';
+						canvasDiff.id = 'cdiff';
+						canvasClone.id = 'cclone';
+
+						canvasOne.width = canvasTwo.width = canvasDiff.width = canvasClone.width = video.offsetWidth;
+						canvasOne.height = canvasTwo.height = canvasDiff.height = canvasClone.height = video.offsetHeight;
+
+						ctxOne = canvasOne.getContext('2d');
+						ctxTwo = canvasTwo.getContext('2d');
+						ctxDiff = canvasDiff.getContext('2d');
+						ctxClone = canvasClone.getContext('2d');
+
+						document.body.appendChild(canvasOne);
+						document.body.appendChild(canvasTwo);
+						leftEyeHolder.appendChild(canvasDiff);
+						rightEyeHolder.appendChild(canvasClone);
+
+						draw();
+
+					}, 1000);
+
+				})
+			;
+
+		})
 	;
+
 
 	window.addEventListener('click', function(key){
 
