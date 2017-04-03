@@ -25,9 +25,9 @@ Frame 1 is the current frame of the video, and frame 2 is the previous frame. Bo
 
 ## Constraints/Things to finish
 
-1. The camera is not guarenteed to be environment facing. The front-facing camera will sometimes load instead. If you're using Firefox on Android, you can choose the back-facing camera to create the effect, otherwise it's the luck of the draw with other browsers (for the time being).
+1. ~~The camera is not guarenteed to be environment facing. The front-facing camera will sometimes load instead. If you're using Firefox on Android, you can choose the back-facing camera to create the effect, otherwise it's the luck of the draw with other browsers (for the time being).~~ The simulator will now try and make a best guess about which (if any) cameras are the rear/environment facing camera on your device. Failing any success, it will default to the primary camera of the device.
 
-2. The old getUserMedia interface is used. I like it better, but I'll upgrade the new promise-based interface when I get a chance.
+2. ~~The old getUserMedia interface is used. I like it better, but I'll upgrade the new promise-based interface when I get a chance.~~ The new promise-based getUserMedia interface has been implemented. It should work for most modern devices.
 
 3. Stereoscopic vision is not supported. Though a left-eye/right-eye view is displayed, the source is from the same camera, so no illusion of depth is created. The image when viewed appears flat, but depth can be inferred from the edges of things in your FoV.
 
