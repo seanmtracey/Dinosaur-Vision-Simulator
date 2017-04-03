@@ -76,8 +76,6 @@ var dino_vision = (function(){
 
 	}
 
-	// Old getUserMedia, for posterity's sake...
-
 	navigator.mediaDevices.enumerateDevices()
 		.then( function(listOfDevices){
 			
@@ -95,8 +93,13 @@ var dino_vision = (function(){
 			if(deviceID !== undefined){
 				constraints.video = { deviceId: { exact: deviceID } };
 			} else {
-				constraints.video ={ facingMode: { exact: "environment" } };
+				constraints.video = { facingMode: { exact: "environment" } };
 			}
+
+			//constraints.video.height = {};
+			
+			// Possibly limit video size for speed.
+			// constraints.video.height.max = 361;
 
 			navigator.mediaDevices.getUserMedia(constraints)
 				.then(function(stream) {
