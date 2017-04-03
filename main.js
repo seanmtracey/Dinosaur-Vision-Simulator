@@ -43,7 +43,8 @@ var dino_vision = (function(){
 		}
 		
 		ctxDiff.putImageData(diffImageData, 0, 0);
-		ctxClone.putImageData(diffImageData, 0, 0);
+		// ctxClone.putImageData(diffImageData, 0, 0);
+		ctxClone.drawImage(canvasDiff, 0, 0);
 
 	}
 
@@ -94,10 +95,8 @@ var dino_vision = (function(){
 				constraints.video = { facingMode: { exact: "environment" } };
 			}
 
-			//constraints.video.height = {};
-			// constraints.video.height.max = 361;
-			
 			// Possibly limit video size for speed.
+			constraints.video.width = { max : 481 };
 
 			navigator.mediaDevices.getUserMedia(constraints)
 				.then(function(stream) {
