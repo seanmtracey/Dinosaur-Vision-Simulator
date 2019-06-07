@@ -101,9 +101,23 @@ var dino_vision = (function(){
 			navigator.mediaDevices.getUserMedia(constraints)
 				.then(function(stream) {
 
-					video.src = window.URL.createObjectURL(stream);
+					try{
+						const vidURL = window.URL.createObjectURL(stream);
+						video.src = vidURL;
+					} catch(err){
+
+						console.log('Unable to createObjectURL for stream. Setting srcObject to stream instead...');
+						video.srcObject = stream;
+
+					}
 
 					setTimeout(function(){
+
+						console.log('Video is playing', !video.paused);
+						
+						if(video.paused){
+							video.play();
+						}
 
 						canvasOne = document.createElement('canvas');
 						canvasTwo = document.createElement('canvas');
@@ -122,8 +136,6 @@ var dino_vision = (function(){
 						ctxTwo = canvasTwo.getContext('2d');
 						ctxDiff = canvasDiff.getContext('2d');
 						ctxClone = canvasClone.getContext('2d');
-
-						// ctxDiff.globalAlpha = ctxClone.globalAlpha = 0.1
 
 						document.body.appendChild(canvasOne);
 						document.body.appendChild(canvasTwo);
