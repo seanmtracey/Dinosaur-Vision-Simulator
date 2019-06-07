@@ -3,7 +3,7 @@ var dino_vision = (function(){
 	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 	window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
-	var video = document.querySelector('video#source');
+	const video = document.querySelector('video#source');
 	var canvasOne = undefined;
 	var canvasTwo = undefined;
 	var canvasDiff = undefined;
@@ -14,21 +14,24 @@ var dino_vision = (function(){
 	var ctxDiff = undefined;
 	var ctxClone = undefined;
 
-	var WIDTH = undefined;
-	var HEIGHT = undefined;
+	let WIDTH = undefined;
+	let HEIGHT = undefined;
 
-	var maxThreshold = 20;
-	var minThreshold = -maxThreshold;
+	const maxThreshold = 20;
+	const minThreshold = -maxThreshold;
 
-	var leftEyeHolder = document.body.querySelector('#left');
-	var rightEyeHolder = document.body.querySelector('#right');
+	const leftEyeHolder = document.body.querySelector('#left');
+	const rightEyeHolder = document.body.querySelector('#right');
 
 	function calculateDiff(dOne, dTwo){
 
-		var diffImageData = ctxOne.createImageData(WIDTH, HEIGHT);
+		const diffImageData = ctxOne.createImageData(WIDTH, HEIGHT);
+		let y = 0;
+		const DATA_SIZE = diffImageData.data.length;
 
-		for(var y = 0; y < diffImageData.data.length; y += 4){
-			var delta = dOne[y] - dTwo[y];
+		while(y < DATA_SIZE){
+
+			const delta = dOne[y] - dTwo[y];
 
 			if(delta < minThreshold || delta > maxThreshold){
 				diffImageData.data[y] = 255;
@@ -40,18 +43,24 @@ var dino_vision = (function(){
 				diffImageData.data[y + 3] = 255;
 			}
 
+			y += 4;
+
 		}
 		
 		ctxDiff.putImageData(diffImageData, 0, 0);
-		// ctxClone.putImageData(diffImageData, 0, 0);
 		ctxClone.drawImage(canvasDiff, 0, 0);
+
 
 	}
 
 	function greyScale(imageData){
 
-		for(var x = 0; x < imageData.data.length; x += 4){
+		let x = 0;
+		const DATA_SIZE = imageData.data.length;
+
+		while(x < DATA_SIZE){
 			imageData.data[x] = imageData.data[x + 1] = imageData.data[x + 2] = (imageData.data[x] + imageData.data[x + 1] + imageData.data[x + 2]);
+			x += 4;
 		}
 
 		return imageData;
@@ -64,8 +73,6 @@ var dino_vision = (function(){
 		ctxOne.drawImage(video, 0, 0);
 
 		var g = greyScale(ctxOne.getImageData(0, 0, WIDTH, HEIGHT));
-
-		// console.log(g);
 
 		ctxOne.putImageData(g, 0, 0);
 
