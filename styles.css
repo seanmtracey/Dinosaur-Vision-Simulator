@@ -35,5 +35,7 @@ video{
     width: 50%;
     height: 100%;
     overflow: hidden;
-    display: flex;
+	display: flex;
+	align-items: center;
+    justify-content: center;
 }

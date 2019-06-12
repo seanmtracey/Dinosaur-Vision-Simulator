@@ -23,8 +23,11 @@ var dino_vision = (function(){
 	const leftEyeHolder = document.body.querySelector('#left');
 	const rightEyeHolder = document.body.querySelector('#right');
 
-	function calculateDiff(dOne, dTwo){
+	const INTENSITY_DIVIDER = 4;
+	let INTENSITIES = undefined;
 
+	function calculateDiff(dOne, dTwo){
+		// debugger;
 		const diffImageData = ctxOne.createImageData(WIDTH, HEIGHT);
 		let y = 0;
 		const DATA_SIZE = diffImageData.data.length;
@@ -32,15 +35,25 @@ var dino_vision = (function(){
 		while(y < DATA_SIZE){
 
 			const delta = dOne[y] - dTwo[y];
+			const normalisedOffset = y / 4;
 
 			if(delta < minThreshold || delta > maxThreshold){
-				diffImageData.data[y] = 255;
+				diffImageData.data[y] = 255 / INTENSITIES[ normalisedOffset ];
 				diffImageData.data[y + 1] = 0;
 				diffImageData.data[y + 2] = 0;
 				diffImageData.data[y + 3] = 255;
+
+				if(INTENSITIES[ normalisedOffset ] > 1){
+					INTENSITIES[ normalisedOffset ] -= 1;
+				}
 			} else {
 				diffImageData.data[y] = diffImageData.data[y + 1] = diffImageData.data[y + 2] = 0;
 				diffImageData.data[y + 3] = 255;
+
+				if(INTENSITIES[ normalisedOffset ] < INTENSITY_DIVIDER){
+					INTENSITIES[ normalisedOffset ] += 1;
+				}
+
 			}
 
 			y += 4;
@@ -138,6 +151,10 @@ var dino_vision = (function(){
 
 						WIDTH = canvasOne.width = canvasTwo.width = canvasDiff.width = canvasClone.width = video.offsetWidth;
 						HEIGHT = canvasOne.height = canvasTwo.height = canvasDiff.height = canvasClone.height = video.offsetHeight;
+
+						INTENSITIES = new Int8Array(WIDTH * HEIGHT).map(I => {return INTENSITY_DIVIDER});
+
+						// debugger;
 
 						ctxOne = canvasOne.getContext('2d');
 						ctxTwo = canvasTwo.getContext('2d');
